@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+    Ekene Ezeasor @ 4th July 2022 / ALX-Udacity
+    This scrpt deploys a server with all the neccessary features
+
+# Specify server resources
+
+Parameters:
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: us-east-1a
+
+  EnvironmentType:
+    Description: "Specify the Environment type of the stack."
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - test
+      - prod
+
+  ImageId:
+    Description: Choose an appropriate image with reference to region
+    Type: AWS::EC2::Image::Id
+
+  KeyPairName:
+    Description: The name of an existing Amazon EC2 key pair in this region to use to SSH into the Amazon EC2 instances.
+    Type: AWS::EC2::KeyPair::KeyName
+
+
+Mappings:
+  EnvironmentToInstanceType:
+    dev:
+      InstanceType: t2.nano
+    test:
+      InstanceType: t2.micro
+    prod:
+      InstanceType: t2.small
+
+Resources:
+  WebAppInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone
+      ImageId: !Ref ImageId
+      InstanceType:
+        !FindInMap [
+          EnvironmentToInstanceType,
+          !Ref EnvironmentType,
+          InstanceType,
+        ]
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !Ref WebAppSecurityGroup
+      Tags:
+        - Key: Project
+          Value: Ansible
+
+
+  WebAppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join ["-", [webapp-security-group, !Ref EnvironmentType]]
+      GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        # Allow inbound connection on port 3000 for ansible management
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Project
+          Value: Ansible
+        
+
+  WebAppEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref WebAppInstance
+      Tags:
+        - Key: Name
+          Value: !Join ["-", [webapp-eip, !Ref EnvironmentType]]
+        - Key: Project
+          Value: Ansible
+
+Outputs:
+  WebsiteURL:
+    Value: !Sub http://${WebAppEIP}
+    Description: WebApp URL
+
+
+
+
+# Declare parameters
+# Parameters:
+
+#   EnvironmentName:
+#     Description: An environment name that will be prefixed to resource names
+#     Type: String
+
+#   ImageId:
+#     Description: Choose an appropriate image with reference to region
+#     Type: AWS::EC2::Image::Id
+
+#   KeyName:
+#     Description: SSH Keypair to login to the instance
+#     Type: AWS::EC2::KeyPair::KeyName
+
+#   InstanceVolume:
+#     Description: Choose your instance volume
+#     Type: Number
+
+#   InstanceType:
+#     Type: String
+#     Description: Choose your instance properties
+
+# Resources:
+#   # Web Server Security Group
+#   WebServerSecGroup:
+#     Type: AWS::EC2::SecurityGroup
+#     Properties:
+#       GroupDescription: Allow http to our hosts and SSH from local only
+#       VpcId:
+#         Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
+#       SecurityGroupIngress:
+#         - IpProtocol: tcp
+#           FromPort: 80
+#           ToPort: 80
+#           CidrIp: 0.0.0.0/0
+#         - IpProtocol: tcp
+#           FromPort: 22
+#           ToPort: 22
+#           CidrIp: 0.0.0.0/0
+#       SecurityGroupEgress:
+#         - IpProtocol: tcp
+#           FromPort: 0
+#           ToPort: 65535
+#           CidrIp: 0.0.0.0/0
+#       Tags:
+#         - Key: Project
+#           Value: Ansible
+
+
+#   WebAppInstance:
+#       Type: AWS::EC2::Instance
+#       Properties:
+#         ImageId: !Ref ImageId  #ami-0d5eff06f840b45e9 # ImageID valid only in us-east-1 region
+#         InstanceType: !Ref InstanceType
+#         UserData:
+#           Fn::Base64: !Sub |
+#             #!/bin/bash
+#             apt-get update -y
+#             apt-get install unzip awscli -y
+#             apt-get install apache2 -y
+#             systemctl start apache2.service
+#             cd /var/www/html
+#             echo "Ansible Web Server Up and Running! By Ekene Ezeasor ALX/Udacity @2022" > index.html
+#         BlockDeviceMappings:
+#           - DeviceName: "/dev/sda1"
+#             Ebs:
+#               VolumeSize: !Ref InstanceVolume
+#         KeyName: !Ref KeyName
+#         SecurityGroups:
+#           - Ref: WebServerSecGroup
+#         SecurityGroupIds: 
+#           - sg-0ec061ee1c787e429
+#         Tags:
+#           - Key: Project
+#             Value: Ansible
+
+#   WebAppEIP:
+#       Type: AWS::EC2::EIP
+#       Properties:
+#         Domain: vpc
+#         InstanceId: !Ref WebAppInstance
+#         Tags:
+#           - Key: Project
+#             Value: Ansible
+
+# ############################### Output #################################
+# Outputs:
+#   WebsiteURL:
+#     Value: !Sub http://${WebAppEIP}
+#     Description: WebApp URL

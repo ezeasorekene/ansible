@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "ImageId",
+        "ParameterValue": "ami-0729e439b6769d6ab"
+    },
+    {
+        "ParameterKey": "KeyPairName",
+        "ParameterValue": "ansible"
+    }
+]
