@@ -77,7 +77,9 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - run: apt install -y tar gzip
+      - run: 
+          name: Install tar and gzip packages
+          command: apk add --update tar gzip
       - attach_workspace:
           at: ~/
       - run: 

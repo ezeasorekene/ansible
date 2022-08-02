@@ -18,10 +18,8 @@ then
 else
     if [[ -z ${2} ]];
     then
-        echo $1 >> ${dir}/${file} \
-        cat ${dir}/${file}
+        echo $1 >> ${dir}/${file}
     else
-        echo $1 >> ${dir}/$2 \
-        && cat ${dir}/$2
+        echo $1 >> ${dir}/$2
     fi
 fi
