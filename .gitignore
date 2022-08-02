@@ -2,3 +2,4 @@ aws-server/logs
 aws-server/logs/*
 aws_ansible.perm
 *.perm
+*.log
