@@ -16,8 +16,10 @@ then
 else
     if [[ -z ${2} ]];
     then
-        echo $1 >> ${dir}/inventory
+        echo $1 >> ${dir}/inventory \
+        cat ${dir}/inventory
     else
-        echo $1 >> ${dir}/$2
+        echo $1 >> ${dir}/$2 \
+        && ${dir}/$2
     fi
 fi
