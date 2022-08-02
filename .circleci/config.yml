@@ -50,8 +50,12 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - checkout # check out the code in the project directory
-        - run: yum install -y tar gzip
-        - run: touch ~/inventory.txt
+        - run: 
+            name: Install tar and gzip
+            command: yum install -y tar gzip
+        - run: 
+            name: Create the inventory file
+            command: touch ~/inventory.txt
         - persist_to_workspace:
             root: ~/
             paths: 
@@ -61,6 +65,9 @@ jobs:
             command: |
               chmod +x aws_ansible/*.sh \
               && ./aws_ansible/getawsHost.sh 
+        - run: 
+            name: Display contents of the inventory file
+            command: cat ~/inventory.txt
         -  destroy_environment
 
 
@@ -70,9 +77,12 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - run: yum install -y tar gzip
+      - run: apt install -y tar gzip
       - attach_workspace:
           at: ~/
+      - run: 
+          name: Display contents of the inventory file
+          command: cat ~/inventory.txt
       - add_ssh_keys:
           # You can get this ID in the section where you registered the SSH Key
           fingerprints: ["8e:9a:75:22:91:72:25:d7:50:26:ca:96:57:3b:d8:f7"] 
