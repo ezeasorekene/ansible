@@ -20,7 +20,13 @@ jobs:
                 --template-file aws-server/cf-scripts/cicd_net.yaml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
-              
+        - run: 
+            name: Delete Cloudformation Stack On Fail
+            command: |
+              aws cloudformation delete-stack \
+                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+            when: on_fail
+
   get_infrastructure_ip:  # Choose any name, such as `build`
       # The primary container, where your job's commands will run
       docker:
@@ -31,7 +37,13 @@ jobs:
             name: Fetch EC IP Address
             command: |
               chmod +x aws_ansible/*.sh \
-              && ./aws_ansible/getawsHost.sh
+              && ./aws_ansible/getawsHost.sh default 
+        - run: 
+            name: Delete Cloudformation Stack On Fail
+            command: |
+              aws cloudformation delete-stack \
+                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+            when: on_fail
 
   # Exercise: Config and Deployment
   configure_infrastructure: 
@@ -50,6 +62,12 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i aws_ansible/inventory aws_ansible/main-remote.yml
+      - run: 
+          name: Delete Cloudformation Stack On Fail
+          command: |
+            aws cloudformation delete-stack \
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+          when: on_fail
 
 # Sequential workflow
 workflows:

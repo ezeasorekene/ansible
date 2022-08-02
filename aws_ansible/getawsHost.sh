@@ -9,13 +9,13 @@ then
     aws ec2 describe-instances \
         --query 'Reservations[*].Instances[*].PublicIpAddress' \
         --profile $1 \
-        --output text | xargs ./${dir}/saveHost.sh
+        --output text | xargs ./aws_ansible/saveHost.sh
 else
     aws ec2 describe-instances \
         --query 'Reservations[*].Instances[*].PublicIpAddress' \
         --profile $1 \
         --filters "Name=tag:$2,Values=$3" \
-        --output text | xargs ./${dir}/saveHost.sh
+        --output text | xargs ./aws_ansible/saveHost.sh
 fi
 
 # if [[ -z ${2} ]] || [[ -z ${3} ]];
