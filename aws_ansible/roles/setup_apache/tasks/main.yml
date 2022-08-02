@@ -22,7 +22,7 @@
 
 - name: Creates directory
   file:
-    path: /var/www/web
+    path: /var/www/html/web
     state: directory
     owner: "www-data"
     mode: '0755'
@@ -30,7 +30,7 @@
 - name: Copy index test page
   template:
     src: "files/index.html"
-    dest: "/var/www/web/index.html"
+    dest: "/var/www/html/web/index.html"
 
 - name: "UFW firewall allow HTTP on port 80"
   ufw:
