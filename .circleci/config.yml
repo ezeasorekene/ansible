@@ -43,12 +43,14 @@ jobs:
                 --region us-east-1
         -  destroy_environment
 
+
   get_infrastructure_ip:  # Choose any name, such as `build`
       # The primary container, where your job's commands will run
       docker:
         - image: amazon/aws-cli
       steps:
         - checkout # check out the code in the project directory
+        - run: yum install -y tar gzip
         - persist_to_workspace:
             root: ~/
             paths: 
@@ -56,9 +58,7 @@ jobs:
         - run: 
             name: Fetch EC IP Address
             command: |
-              sudo yum makecache --refresh \
-              && sudo yum -y install tar.x86_64 \
-              && chmod +x aws_ansible/*.sh \
+              chmod +x aws_ansible/*.sh \
               && ./aws_ansible/getawsHost.sh 
         -  destroy_environment
 
@@ -69,6 +69,7 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - run: yum install -y tar gzip
       - attach_workspace:
           at: ~/
       - add_ssh_keys:
