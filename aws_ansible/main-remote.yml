@@ -9,4 +9,5 @@
   become_method: sudo
   become_user: root
   roles:
-   - setup
+   - setup_apache
+   - setup_nodejs

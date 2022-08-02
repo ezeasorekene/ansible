@@ -5,6 +5,7 @@ dir="$(dirname -- "$(readlink -f "${BASH_SOURCE}")")"
 if grep -Fxq "$1" inventory
 then
     echo "Host already exits"
+    exit(1)
 else
     if [[ -z ${2} ]];
     then
