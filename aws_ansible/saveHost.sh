@@ -8,8 +8,8 @@ then
 else
     if [[ -z ${2} ]];
     then
-        echo $1 >> ${dir}/inventory
+        echo $1 >> aws_ansible/inventory
     else
-        echo $1 >> ${dir}/$2
+        echo $1 >> aws_ansible/$2
     fi
 fi
