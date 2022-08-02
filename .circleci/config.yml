@@ -63,8 +63,13 @@ jobs:
         - run: 
             name: Fetch EC IP Address
             command: |
-              chmod +x aws_ansible/*.sh \
-              && ./aws_ansible/getawsHost.sh 
+              aws ec2 describe-instances \
+                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+                --output text >> ~/inventory.txt
+            # --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            # --filters "Name=tag:Project,Values=Ansible" \
+            # chmod +x aws_ansible/*.sh \
+            # && ./aws_ansible/getawsHost.sh 
         - run: 
             name: Display contents of the inventory file
             command: cat ~/inventory.txt
@@ -82,9 +87,6 @@ jobs:
           command: apk add --update tar gzip
       - attach_workspace:
           at: ~/
-      - run: 
-          name: Display contents of the inventory file
-          command: cat ~/inventory.txt
       - add_ssh_keys:
           # You can get this ID in the section where you registered the SSH Key
           fingerprints: ["8e:9a:75:22:91:72:25:d7:50:26:ca:96:57:3b:d8:f7"] 
@@ -92,6 +94,12 @@ jobs:
           name: Export inventory file
           command: |
             cat ~/inventory.txt >> aws_ansible/inventory
+      - run: 
+          name: Display contents of the inventory.txt file
+          command: cat ~/inventory.txt
+      - run: 
+          name: Display contents of the inventory file
+          command: cat aws_ansible/inventory.txt
       - run:
           name: Install Ansible
           command: |
