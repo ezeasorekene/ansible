@@ -74,8 +74,8 @@ jobs:
               aws ec2 describe-instances \
                 --query 'Reservations[*].Instances[*].PublicIpAddress' \
                 --filters "Name=tag:Project,Values=Ansible" \
-                --max-items 1 \
                 --output text >> ~/inventory.txt
+            # --max-items 1 \
             # chmod +x aws_ansible/*.sh \
             # && ./aws_ansible/getawsHost.sh 
         - run: 
@@ -113,6 +113,9 @@ jobs:
           command: |
             apk add --update ansible
       - run:
+          name: Set ANSIBLE_HOST_KEY_CHECKING to False
+          command: export ANSIBLE_HOST_KEY_CHECKING=False
+      - run:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i aws_ansible/inventory aws_ansible/main-remote.yml
@@ -129,5 +132,4 @@ workflows:
             - create_infrastructure
       - configure_infrastructure:
           requires:
-            - create_infrastructure
             - get_infrastructure_ip
