@@ -41,6 +41,14 @@ jobs:
                 --template-file aws-server/cf-scripts/cicd_net.yaml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
+        - run: 
+            name: Fetch EC IP Address
+            command: |
+              aws ec2 describe-instances \
+                --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                --filters "Name=tag:Project,Values=Ansible" \
+                --max-items 1 \
+                --output text
         -  destroy_environment
 
 
@@ -99,7 +107,7 @@ jobs:
           command: cat ~/inventory.txt
       - run: 
           name: Display contents of the inventory file
-          command: cat aws_ansible/inventory.txt
+          command: cat aws_ansible/inventory
       - run:
           name: Install Ansible
           command: |
