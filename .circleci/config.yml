@@ -49,6 +49,10 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - checkout # check out the code in the project directory
+        - persist_to_workspace:
+            root: ~/
+            paths: 
+              - inventory.txt  
         - run: 
             name: Fetch EC IP Address
             command: |
@@ -63,9 +67,15 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
       - add_ssh_keys:
           # You can get this ID in the section where you registered the SSH Key
           fingerprints: ["8e:9a:75:22:91:72:25:d7:50:26:ca:96:57:3b:d8:f7"] 
+      - run:
+          name: Export inventory file
+          command: |
+            cat ~/inventory.txt >> aws_ansible/inventory
       - run:
           name: Install Ansible
           command: |
