@@ -56,7 +56,8 @@ jobs:
         - run: 
             name: Fetch EC IP Address
             command: |
-              chmod +x aws_ansible/*.sh \
+              sudo apt install tar -y \
+              && chmod +x aws_ansible/*.sh \
               && ./aws_ansible/getawsHost.sh 
         -  destroy_environment
 
