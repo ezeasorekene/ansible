@@ -90,7 +90,6 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - run: echo ${EC2_IP} >> aws_ansible/inventory
       - run: 
           name: Install tar and gzip packages
           command: apk add --update tar gzip
