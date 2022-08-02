@@ -5,8 +5,6 @@ orbs:
   # welcome: circleci/welcome-orb@0.4.1
   # aws-cli: circleci/aws-cli@2.0.3
   aws-cli: circleci/aws-cli@2.0.3
-  ansible: python:3.7-alpine3.11
-
 
 commands:
   # Exercise: Reusable Job Code
@@ -62,7 +60,7 @@ jobs:
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
-      - image: ansible
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
