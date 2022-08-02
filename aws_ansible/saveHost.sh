@@ -20,6 +20,6 @@ else
         cat ${dir}/inventory
     else
         echo $1 >> ${dir}/$2 \
-        && ${dir}/$2
+        && cat ${dir}/$2
     fi
 fi
